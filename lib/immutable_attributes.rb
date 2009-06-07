@@ -24,8 +24,6 @@ module ImmutableAttributes
     config = { :on => :update, :if => lambda {|x| true}, :message => "can't be changed" }
     config.update(attr_names.extract_options!)
 
-    @immutables = attr_names
-
     attr_names.each do |meth|
       class_eval do
         define_method("original_#{meth}") do
@@ -35,8 +33,10 @@ module ImmutableAttributes
     end
 
     class_eval do
-      def self.immutables
-        @immutables
+      self.class.class_eval do
+        define_method :immutables do
+          attr_names
+        end
       end
 
       def after_initialize; end;
